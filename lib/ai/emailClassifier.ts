@@ -1,16 +1,15 @@
 /**
  * AI Email Classifier
  * 
- * Uses OpenAI GPT-4o to analyze emails and create tasks with time estimates,
+ * Uses Google Gemini to analyze emails and create tasks with time estimates,
  * priorities, and deadlines.
  */
 
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { parseISO, addDays, startOfDay } from 'date-fns';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 interface Email {
   sender_email: string;
@@ -50,32 +49,30 @@ export async function classifyEmail(
   try {
     const prompt = buildClassificationPrompt(email, rules);
     
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: SYSTEM_PROMPT
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.3,
-      max_tokens: 800
-    });
+    const result = await model.generateContent([
+      SYSTEM_PROMPT,
+      prompt
+    ]);
     
-    const response = completion.choices[0].message.content;
+    const response = result.response.text();
     if (!response) {
-      throw new Error('Empty response from OpenAI');
+      throw new Error('Empty response from Gemini');
     }
     
-    const result = JSON.parse(response);
+    // Extract JSON from response (Gemini might wrap it in markdown)
+    let jsonText = response;
+    if (response.includes('```json')) {
+      const match = response.match(/```json\n([\s\S]*?)\n```/);
+      if (match) jsonText = match[1];
+    } else if (response.includes('```')) {
+      const match = response.match(/```\n([\s\S]*?)\n```/);
+      if (match) jsonText = match[1];
+    }
+    
+    const parsedResult = JSON.parse(jsonText);
     
     // Validate and normalize the result
-    return normalizeClassification(result, email);
+    return normalizeClassification(parsedResult, email);
     
   } catch (error) {
     console.error('Classification error:', error);

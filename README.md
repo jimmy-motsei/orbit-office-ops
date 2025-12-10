@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Orbit - Personal Work Operating System
+
+A personal work management system that aggregates inputs from multiple email accounts, filters them through custom criteria, and autonomously schedules work 1–2 weeks in advance.
+
+## Tech Stack
+
+- **Frontend:** Next.js 15 (App Router)
+- **Backend:** Vercel Serverless Functions
+- **Database:** Supabase (PostgreSQL)
+- **AI:** OpenAI GPT-4o / Anthropic Claude 3.5
+- **Deployment:** Vercel
+
+## Features
+
+- 📧 Multi-inbox email aggregation (Gmail, Outlook)
+- 🎯 Custom filtering rules via Apple Reminders
+- 🤖 AI-powered task estimation and prioritization
+- 📅 Autonomous 2-week advance scheduling
+- ⏰ Lead-time aware planning with safety buffers
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ and npm
+- Supabase account
+- OpenAI API key
+- Vercel account
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# OpenAI
+OPENAI_API_KEY=your_openai_api_key
+
+# API Security
+API_SECRET_KEY=your_secret_key_for_reminders_sync
+
+# OAuth (Gmail/Outlook)
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+MICROSOFT_CLIENT_ID=your_microsoft_client_id
+MICROSOFT_CLIENT_SECRET=your_microsoft_client_secret
+```
+
+### Database Setup
+
+Run the Supabase migrations:
+
+```bash
+# Create tables
+psql -h your-supabase-host -U postgres -d postgres -f supabase/migrations/001_initial_schema.sql
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+orbit-office-ops/
+├── app/
+│   ├── api/              # Vercel API routes
+│   │   ├── ingest/       # Email ingestion endpoint
+│   │   ├── sync-rules/   # Apple Reminders sync endpoint
+│   │   └── schedule/     # Scheduling endpoint
+│   ├── dashboard/        # Main dashboard UI
+│   └── layout.tsx
+├── lib/
+│   ├── supabase/         # Database client
+│   ├── scheduler/        # Scheduling algorithm
+│   ├── ai/               # LLM integrations
+│   └── email/            # Email connectors
+├── scripts/
+│   └── reminders_bridge.py  # macOS Reminders sync script
+└── supabase/
+    └── migrations/       # Database schema
+```
 
-## Learn More
+## Apple Reminders Bridge
 
-To learn more about Next.js, take a look at the following resources:
+The system syncs rules from Apple Reminders using a local Python script:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cd scripts
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python reminders_bridge.py
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Set up macOS Automation to run this script daily.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Deploy to Vercel:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+vercel --prod
+```
+
+## License
+
+MIT

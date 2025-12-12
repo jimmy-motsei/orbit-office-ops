@@ -1,0 +1,206 @@
+<!-- 
+  Maru Chatbot Icon - Pure HTML/CSS Version
+  
+  Copy this code to your maru-chatbot project
+  Works without React - just HTML, CSS, and vanilla JavaScript
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maru Chatbot Icon</title>
+  
+  <style>
+    /* Maru Chatbot Button Styles */
+    .maru-chat-button {
+      /* Position */
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+
+      /* Layout */
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+
+      /* Styling */
+      background: linear-gradient(135deg, #00D9FF 0%, #0099FF 100%);
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 8px 24px rgba(0, 217, 255, 0.3),
+                  0 4px 8px rgba(0, 0, 0, 0.1);
+      
+      /* Animation */
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateY(0);
+    }
+
+    .maru-chat-button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 217, 255, 0.4),
+                  0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .maru-chat-button:active {
+      transform: translateY(-2px);
+    }
+
+    /* Chat Icon Container */
+    .chat-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    /* Chat Text */
+    .chat-text {
+      color: white;
+      font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      
+      background: #FF3B30;
+      border: 2px solid white;
+      border-radius: 10px;
+      
+      color: white;
+      font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* Hide badge when count is 0 */
+    .notification-badge[data-count="0"] {
+      display: none;
+    }
+
+    /* Pulsing Animation */
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 8px 24px rgba(0, 217, 255, 0.3),
+                    0 4px 8px rgba(0, 0, 0, 0.1),
+                    0 0 0 0 rgba(0, 217, 255, 0.4);
+      }
+      50% {
+        box-shadow: 0 8px 24px rgba(0, 217, 255, 0.3),
+                    0 4px 8px rgba(0, 0, 0, 0.1),
+                    0 0 0 8px rgba(0, 217, 255, 0);
+      }
+    }
+
+    /* Add pulse animation when there are unread messages */
+    .maru-chat-button.has-notifications {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .maru-chat-button {
+        bottom: 16px;
+        right: 16px;
+        padding: 10px 16px;
+      }
+
+      .chat-text {
+        font-size: 14px;
+      }
+
+      .chat-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Maru Chatbot Button -->
+<button class="maru-chat-button has-notifications" id="maruChatButton" aria-label="Open chat">
+  <!-- Chat Icon SVG -->
+  <svg
+    class="chat-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"
+      fill="white"
+    />
+    <!-- Three dots inside chat bubble -->
+    <circle cx="8" cy="10" r="1.5" fill="#00D9FF" />
+    <circle cx="12" cy="10" r="1.5" fill="#00D9FF" />
+    <circle cx="16" cy="10" r="1.5" fill="#00D9FF" />
+  </svg>
+
+  <!-- "Chat" Text -->
+  <span class="chat-text">Chat</span>
+
+  <!-- Notification Badge -->
+  <span class="notification-badge" id="chatBadge" data-count="1">1</span>
+</button>
+
+<script>
+  // Maru Chatbot Button JavaScript
+  const chatButton = document.getElementById('maruChatButton');
+  const chatBadge = document.getElementById('chatBadge');
+  let unreadCount = 1; // Set your unread count here
+
+  // Update badge count
+  function updateBadgeCount(count) {
+    unreadCount = count;
+    chatBadge.setAttribute('data-count', count);
+    chatBadge.textContent = count > 9 ? '9+' : count;
+    
+    // Toggle pulse animation
+    if (count > 0) {
+      chatButton.classList.add('has-notifications');
+    } else {
+      chatButton.classList.remove('has-notifications');
+    }
+  }
+
+  // Handle button click
+  chatButton.addEventListener('click', function() {
+    console.log('Chat button clicked!');
+    
+    // Clear unread count when chat opens
+    updateBadgeCount(0);
+    
+    // TODO: Add your chat opening logic here
+    // For example:
+    // - Show chat widget
+    // - Open chat modal
+    // - Navigate to chat page
+  });
+
+  // Example: Update badge from external event
+  // updateBadgeCount(3);
+</script>
+
+</body>
+</html>

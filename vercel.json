@@ -1,15 +1,4 @@
 {
-  "_comment_crons": "Temporarily disabled due to Vercel free tier limit (2 cron jobs max). Can manually trigger endpoints or re-enable after removing cron jobs from other projects.",
-  "_disabled_crons": [
-    {
-      "path": "/api/ingest-email",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/process-emails",
-      "schedule": "30 6 * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/sw.js",

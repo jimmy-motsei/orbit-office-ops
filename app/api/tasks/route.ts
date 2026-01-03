@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, tasks } from '@/lib/db';
 import { eq, desc, and } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/tasks - Fetch all tasks with optional filters
 export async function GET(request: NextRequest) {
     try {

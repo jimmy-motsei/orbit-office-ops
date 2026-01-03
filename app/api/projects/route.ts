@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, projects } from '@/lib/db';
 import { eq, asc, desc } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/projects - Fetch all projects
 export async function GET() {
     try {
